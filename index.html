@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>War Room V15.0: Multi-Language Support</title>
+    <title>War Room V20.0: Global Time & Conflict</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
     <style>
@@ -106,9 +106,9 @@
     <!-- Header -->
     <header class="flex flex-col md:flex-row justify-between items-center mb-4 border-b border-green-900/50 pb-4">
         <div class="flex items-center gap-4">
-            <i class="fas fa-shield-alt text-4xl text-green-600 animate-pulse" id="mainIcon"></i>
+            <i class="fas fa-globe-americas text-4xl text-green-600 animate-pulse" id="mainIcon"></i>
             <div>
-                <h1 class="text-4xl header-font tracking-widest text-gray-100">WAR ROOM <span class="text-green-600 text-sm align-top">V15.0</span></h1>
+                <h1 class="text-4xl header-font tracking-widest text-gray-100">WAR ROOM <span class="text-green-600 text-sm align-top">V17.0</span></h1>
                 <div class="text-[10px] text-green-500 tech-font tracking-[0.3em]" data-key="subtitle">ADVANCED CONFLICT ENGINE</div>
             </div>
         </div>
@@ -120,10 +120,11 @@
             <div class="hidden md:block">
                 <div class="text-[9px] text-gray-500 tech-font" data-key="systemTime">SYSTEM TIME</div>
                 <div id="sysTime" class="text-xl text-green-500 tech-font">00:00:00</div>
+                <div id="timeZoneLabel" class="text-[9px] text-gray-600 tech-font text-right">LONDON</div>
             </div>
             <!-- Language Toggle -->
             <button onclick="toggleLang()" class="ml-4 border border-green-700 rounded px-3 py-1 text-green-400 hover:bg-green-900 transition flex items-center gap-2 tech-font text-xs">
-                <i class="fas fa-globe"></i> <span id="langLabel">EN</span>
+                <i class="fas fa-language"></i> <span id="langLabel">EN</span>
             </button>
         </div>
     </header>
@@ -131,13 +132,13 @@
     <!-- Navigation Tabs -->
     <div class="w-full max-w-7xl mx-auto flex gap-2 md:gap-4 mb-4 z-20 overflow-x-auto">
         <button id="tabSim" class="mode-tab active whitespace-nowrap" onclick="switchTab('sim')">
-            <i class="fas fa-globe mr-2"></i><span data-key="tabModern">MODERN DEVLETLER</span>
+            <i class="fas fa-fighter-jet mr-2"></i><span data-key="tabModern">MODERN STATES</span>
         </button>
         <button id="tabHistory" class="mode-tab whitespace-nowrap" onclick="switchTab('history')">
-            <i class="fas fa-scroll mr-2"></i><span data-key="tabHistory">TARİH ARŞİVİ</span>
+            <i class="fas fa-landmark mr-2"></i><span data-key="tabHistory">HISTORY ARCHIVE</span>
         </button>
         <button id="tabAlt" class="mode-tab whitespace-nowrap" onclick="switchTab('alt')">
-            <i class="fas fa-crown mr-2"></i><span data-key="tabEmpire">İMPARATORLUKLAR</span>
+            <i class="fas fa-chess-rook mr-2"></i><span data-key="tabEmpire">EMPIRES</span>
         </button>
     </div>
 
@@ -148,11 +149,11 @@
         <section class="lg:col-span-3 flex flex-col gap-3">
             <div class="glass-panel p-4 border-t-4 border-t-blue-600 h-full" id="panelA">
                 <div class="flex justify-between items-center mb-4">
-                    <span class="text-blue-500 text-xs font-bold tracking-widest" data-key="sideA">TARAF A (MÜTTEFİK)</span>
+                    <span class="text-blue-500 text-xs font-bold tracking-widest" data-key="sideA">SIDE A (ALLIED)</span>
                     <span id="flagA" class="text-3xl grayscale opacity-80">🇺🇳</span>
                 </div>
                 <div id="selectContainerA" class="custom-select-wrapper">
-                    <input type="text" id="searchA" class="custom-select-input" placeholder="Devlet Ara..." autocomplete="off">
+                    <input type="text" id="searchA" class="custom-select-input" placeholder="Search..." autocomplete="off">
                     <div id="listA" class="custom-options-list"></div>
                     <input type="hidden" id="valA">
                 </div>
@@ -170,11 +171,11 @@
                         <!-- Options filled by JS for translation -->
                     </select>
                     <button onclick="randomize()" id="btnRandom" class="bg-green-900/30 hover:bg-green-500 hover:text-black border border-green-700 text-green-500 text-xs px-3 transition tech-font">
-                        <i class="fas fa-random"></i> <span data-key="random">RASTGELE</span>
+                        <i class="fas fa-random"></i> <span data-key="random">RANDOM</span>
                     </button>
                 </div>
                 <div class="flex items-center gap-2">
-                    <span class="text-[9px] text-red-500 font-bold" data-key="nukePerm">NÜKLEER:</span>
+                    <span class="text-[9px] text-red-500 font-bold" data-key="nukePerm">NUCLEAR:</span>
                     <input type="checkbox" id="nukeToggle" class="accent-red-600">
                 </div>
             </div>
@@ -183,35 +184,35 @@
             <div class="glass-panel relative h-[380px] border border-green-800/60 overflow-hidden group">
                 <div class="absolute top-2 left-2 z-10 bg-black/70 px-2 py-1 border border-green-900 flex gap-2">
                     <span class="text-[10px] text-green-500 tech-font animate-pulse">● LIVE FEED</span>
-                    <span id="weatherIndicator" class="text-[10px] text-blue-400 tech-font border-l border-green-800 pl-2">AÇIK HAVA</span>
+                    <span id="weatherIndicator" class="text-[10px] text-blue-400 tech-font border-l border-green-800 pl-2">CLEAR SKY</span>
                     <span id="modeLabel" class="text-[10px] text-yellow-500 tech-font border-l border-green-800 pl-2 font-bold">MODERN</span>
                 </div>
                 <canvas id="battleCanvas" width="600" height="380"></canvas>
                 <div class="absolute bottom-0 left-0 w-full bg-black/80 border-t border-green-900 p-2 flex justify-between tech-font text-xs">
-                    <div class="text-blue-400"><span data-key="sideA_short">TARAF A</span>: <span id="liveScoreA">100%</span></div>
-                    <div class="text-gray-400"><span data-key="day">GÜN</span>: <span id="battleDay">0</span></div>
-                    <div class="text-red-400"><span data-key="sideB_short">TARAF B</span>: <span id="liveScoreB">100%</span></div>
+                    <div class="text-blue-400"><span data-key="sideA_short">SIDE A</span>: <span id="liveScoreA">100%</span></div>
+                    <div class="text-gray-400"><span data-key="day">DAY</span>: <span id="battleDay">0</span></div>
+                    <div class="text-red-400"><span data-key="sideB_short">SIDE B</span>: <span id="liveScoreB">100%</span></div>
                 </div>
 
                 <!-- Overlay -->
                 <div id="startOverlay" class="absolute inset-0 bg-transparent flex flex-col items-center justify-center z-20 p-6 text-center pointer-events-none">
                     <div id="startState" class="pointer-events-auto">
                         <button onclick="startOperation()" id="startBtnMain" class="px-8 py-4 bg-green-900/90 border-2 border-green-500 text-green-400 font-bold hover:bg-green-500 hover:text-black hover:shadow-[0_0_30px_#00ff00] transition-all tracking-[0.2em] header-font text-xl">
-                            OPERASYONU BAŞLAT
+                            START OPERATION
                         </button>
                     </div>
                     <div id="resultState" class="hidden w-full max-w-lg overflow-y-auto max-h-full bg-black/90 p-4 border border-green-900/50 rounded-lg pointer-events-auto">
-                        <div class="text-sm text-gray-500 uppercase tracking-widest mb-1" data-key="resultTitle">Operasyon Sonucu</div>
+                        <div class="text-sm text-gray-500 uppercase tracking-widest mb-1" data-key="resultTitle">Operation Result</div>
                         <h2 id="resWinner" class="text-3xl font-bold text-white header-font mb-4">WINNER</h2>
                         <div class="bg-white/5 border-l-2 border-green-500 p-4 text-left mb-4">
-                            <h3 class="text-green-500 text-xs font-bold mb-2 uppercase" data-key="reportTitle">Savaş Raporu</h3>
+                            <h3 class="text-green-500 text-xs font-bold mb-2 uppercase" data-key="reportTitle">Combat Report</h3>
                             <p id="resScenario" class="text-gray-300 text-sm leading-relaxed font-serif"></p>
                         </div>
                         <div class="grid grid-cols-2 gap-4 mb-6">
-                            <div class="bg-red-900/20 border border-red-900/40 p-2 rounded"><div class="text-[10px] text-red-400 uppercase" data-key="casualties">Zayiat</div><div id="resCasualties" class="text-lg font-mono text-gray-200">0</div></div>
-                            <div class="bg-blue-900/20 border border-blue-900/40 p-2 rounded"><div class="text-[10px] text-blue-400 uppercase" data-key="duration">Süre</div><div id="resDuration" class="text-lg font-mono text-gray-200">0 Gün</div></div>
+                            <div class="bg-red-900/20 border border-red-900/40 p-2 rounded"><div class="text-[10px] text-red-400 uppercase" data-key="casualties">Casualties</div><div id="resCasualties" class="text-lg font-mono text-gray-200">0</div></div>
+                            <div class="bg-blue-900/20 border border-blue-900/40 p-2 rounded"><div class="text-[10px] text-blue-400 uppercase" data-key="duration">Duration</div><div id="resDuration" class="text-lg font-mono text-gray-200">0 Days</div></div>
                         </div>
-                        <button onclick="resetSim()" class="px-6 py-2 border border-gray-600 text-gray-300 text-xs hover:bg-white hover:text-black transition" data-key="resetBtn">SİSTEMİ SIFIRLA</button>
+                        <button onclick="resetSim()" class="px-6 py-2 border border-gray-600 text-gray-300 text-xs hover:bg-white hover:text-black transition" data-key="resetBtn">RESET SYSTEM</button>
                     </div>
                 </div>
             </div>
@@ -222,7 +223,7 @@
                     <span class="text-[10px] text-green-600 tech-font"><i class="fas fa-terminal mr-2"></i>TACTICAL LOG</span>
                 </div>
                 <div id="battleLog" class="p-3 text-xs font-mono text-gray-400 h-32 overflow-y-auto space-y-1">
-                    <div class="text-green-800" data-key="logReady">Sistem Hazır...</div>
+                    <div class="text-green-800" data-key="logReady">System Ready...</div>
                 </div>
             </div>
         </section>
@@ -231,13 +232,13 @@
         <section class="lg:col-span-3 flex flex-col gap-3">
             <div class="glass-panel p-4 border-t-4 border-t-red-600 h-full" id="panelB">
                 <div class="flex justify-between items-center mb-4">
-                    <span class="text-red-500 text-xs font-bold tracking-widest" data-key="sideB">TARAF B (DÜŞMAN)</span>
+                    <span class="text-red-500 text-xs font-bold tracking-widest" data-key="sideB">SIDE B (ENEMY)</span>
                     <span id="flagB" class="text-3xl grayscale opacity-80">🏴‍☠️</span>
                 </div>
                 
                 <!-- Searchable Select B -->
                 <div id="selectContainerB" class="custom-select-wrapper">
-                    <input type="text" id="searchB" class="custom-select-input" placeholder="Devlet Ara..." autocomplete="off">
+                    <input type="text" id="searchB" class="custom-select-input" placeholder="Search..." autocomplete="off">
                     <div id="listB" class="custom-options-list"></div>
                     <input type="hidden" id="valB">
                 </div>
@@ -252,7 +253,7 @@
     <main id="view-history" class="hidden grid grid-cols-1 lg:grid-cols-12 gap-4 w-full max-w-7xl mx-auto flex-1 animate-fadeIn">
         <section class="lg:col-span-4 glass-panel p-0 overflow-hidden flex flex-col h-[600px]">
             <div class="p-4 border-b border-green-900 bg-black/40">
-                <h3 class="text-yellow-500 font-bold header-font tracking-wider"><i class="fas fa-archive mr-2"></i><span data-key="battleLogs">SAVAŞ KAYITLARI</span></h3>
+                <h3 class="text-yellow-500 font-bold header-font tracking-wider"><i class="fas fa-archive mr-2"></i><span data-key="battleLogs">WAR LOGS</span></h3>
             </div>
             <div id="historyList" class="overflow-y-auto flex-1 p-2 space-y-1"></div>
         </section>
@@ -261,29 +262,29 @@
             <div id="historyContent" class="hidden h-full flex flex-col">
                 <div class="flex justify-between items-end border-b-2 border-yellow-700/50 pb-4 mb-6">
                     <div><div id="histDate" class="text-yellow-600 text-sm font-bold tech-font mb-1">DATE</div><h2 id="histTitle" class="text-3xl font-bold text-white header-font">TITLE</h2></div>
-                    <div class="text-right"><div class="text-[10px] text-gray-500 uppercase" data-key="winner">Kazanan</div><div id="histWinner" class="text-xl text-yellow-500 font-bold">WINNER</div></div>
+                    <div class="text-right"><div class="text-[10px] text-gray-500 uppercase" data-key="winner">Winner</div><div id="histWinner" class="text-xl text-yellow-500 font-bold">WINNER</div></div>
                 </div>
                 <div class="grid grid-cols-2 gap-6 mb-6">
-                    <div class="bg-black/40 p-4 border-l-2 border-blue-500"><div class="text-xs text-blue-400 font-bold mb-1" data-key="sideA_short">TARAF A</div><div id="histSideA" class="text-lg text-white">Side A</div><div id="histTroopsA" class="text-xs text-gray-500 mt-1">Troops</div></div>
-                    <div class="bg-black/40 p-4 border-r-2 border-red-500 text-right"><div class="text-xs text-red-400 font-bold mb-1" data-key="sideB_short">TARAF B</div><div id="histSideB" class="text-lg text-white">Side B</div><div id="histTroopsB" class="text-xs text-gray-500 mt-1">Troops</div></div>
+                    <div class="bg-black/40 p-4 border-l-2 border-blue-500"><div class="text-xs text-blue-400 font-bold mb-1" data-key="sideA_short">SIDE A</div><div id="histSideA" class="text-lg text-white">Side A</div><div id="histTroopsA" class="text-xs text-gray-500 mt-1">Troops</div></div>
+                    <div class="bg-black/40 p-4 border-r-2 border-red-500 text-right"><div class="text-xs text-red-400 font-bold mb-1" data-key="sideB_short">SIDE B</div><div id="histSideB" class="text-lg text-white">Side B</div><div id="histTroopsB" class="text-xs text-gray-500 mt-1">Troops</div></div>
                 </div>
                 <div class="flex-1 bg-black/20 p-6 border border-gray-800 rounded relative overflow-y-auto mb-4">
                     <p id="histDesc" class="text-gray-300 leading-relaxed font-serif relative z-10 text-sm md:text-base"></p>
                 </div>
-                <button onclick="replayHistory()" class="w-full py-4 bg-yellow-600/20 border border-yellow-500 text-yellow-400 font-bold hover:bg-yellow-500 hover:text-black transition uppercase tracking-widest header-font"><i class="fas fa-film mr-2"></i> <span data-key="replayBtn">BU SAVAŞI CANLANDIR</span></button>
+                <button onclick="replayHistory()" class="w-full py-4 bg-yellow-600/20 border border-yellow-500 text-yellow-400 font-bold hover:bg-yellow-500 hover:text-black transition uppercase tracking-widest header-font"><i class="fas fa-film mr-2"></i> <span data-key="replayBtn">REPLAY THIS BATTLE</span></button>
             </div>
-            <div id="historyEmpty" class="h-full flex flex-col items-center justify-center text-gray-600"><i class="fas fa-folder-open text-6xl mb-4 opacity-20"></i><p data-key="selectBattle">Görüntülemek için soldan bir savaş kaydı seçin.</p></div>
+            <div id="historyEmpty" class="h-full flex flex-col items-center justify-center text-gray-600"><i class="fas fa-folder-open text-6xl mb-4 opacity-20"></i><p data-key="selectBattle">Select a battle from the left to view details.</p></div>
         </section>
     </main>
 
-    <div class="news-ticker-wrap"><div class="news-ticker" id="newsFeed">+++ WAR ROOM V15.0 BAŞLATILDI +++ VERİTABANI GÜNCELLENDİ +++ TR/EN DESTEĞİ AKTİF +++</div></div>
+    <div class="news-ticker-wrap"><div class="news-ticker" id="newsFeed">+++ WAR ROOM V17.0 INITIALIZED +++ GLOBAL TIME SYNC ACTIVE +++</div></div>
 
     <script>
         // --- TRANSLATIONS & LANGUAGE ---
         let currentLang = 'en';
         const i18n = {
             tr: {
-                subtitle: "GELİŞMİŞ ÇATIŞMA MOTORU", stability: "KÜRESEL İSTİKRAR", systemTime: "SİSTEM SAATİ",
+                subtitle: "KAOS TEORİSİ MOTORU", stability: "KÜRESEL İSTİKRAR", systemTime: "İSTANBUL SAATİ",
                 tabModern: "MODERN DEVLETLER", tabHistory: "TARİH ARŞİVİ", tabEmpire: "İMPARATORLUKLAR",
                 sideA: "TARAF A (MÜTTEFİK)", sideB: "TARAF B (DÜŞMAN)", sideA_short: "TARAF A", sideB_short: "TARAF B",
                 search: "Devlet Ara...", random: "RASTGELE", nukePerm: "NÜKLEER İZİN:",
@@ -295,10 +296,12 @@
                 weather: { clear: "AÇIK HAVA", rain: "YAĞMURLU", snow: "KAR YAĞIŞLI", storm: "FIRTINA", sandstorm: "KUM FIRTINASI" },
                 terrain: { plains: "DÜZ ARAZİ", urban: "ŞEHİR (URBAN)", mountain: "DAĞLIK BÖLGE", naval: "AÇIK DENİZ", desert: "ÇÖL FIRTINASI", jungle: "ORMANLIK", snow: "KUTUP BÖLGESİ" },
                 stats: { army: "ASKERİ GÜÇ", tech: "TEKNOLOJİ", air: "HAVA/DENİZ", ally: "İTTİFAK", econ: "EKONOMİ", nuke: "NÜKLEER", nonuke: "KONVANSİYONEL", stab: "İSTİKRAR" },
-                news: "+++ WAR ROOM V15.0 BAŞLATILDI +++ VERİTABANI GÜNCELLENDİ +++ TR/EN DESTEĞİ AKTİF +++"
+                news: "+++ WAR ROOM V17.0 BAŞLATILDI +++ İSTANBUL SAATİ AKTİF +++ YENİ İMPARATORLUKLAR EKLENDİ +++",
+                events: { accident: "KAZA: ", intel: "İSTİHBARAT: ", morale: "MORAL: ", logistics: "LOJİSTİK: " },
+                city: "İSTANBUL"
             },
             en: {
-                subtitle: "ADVANCED CONFLICT ENGINE", stability: "GLOBAL STABILITY", systemTime: "SYSTEM TIME",
+                subtitle: "CHAOS THEORY ENGINE", stability: "GLOBAL STABILITY", systemTime: "LONDON TIME",
                 tabModern: "MODERN STATES", tabHistory: "HISTORY ARCHIVE", tabEmpire: "EMPIRES ARENA",
                 sideA: "SIDE A (ALLIED)", sideB: "SIDE B (ENEMY)", sideA_short: "SIDE A", sideB_short: "SIDE B",
                 search: "Search State...", random: "RANDOM", nukePerm: "NUCLEAR:",
@@ -310,17 +313,31 @@
                 weather: { clear: "CLEAR SKY", rain: "RAINY", snow: "SNOWING", storm: "STORM", sandstorm: "SANDSTORM" },
                 terrain: { plains: "PLAINS", urban: "URBAN WARFARE", mountain: "MOUNTAINS", naval: "OPEN SEA", desert: "DESERT STORM", jungle: "JUNGLE", snow: "ARCTIC" },
                 stats: { army: "MILITARY POWER", tech: "TECHNOLOGY", air: "AIR/NAVAL", ally: "ALLIANCE", econ: "ECONOMY", nuke: "NUCLEAR", nonuke: "CONVENTIONAL", stab: "STABILITY" },
-                news: "+++ WAR ROOM V15.0 INITIALIZED +++ DATABASE UPDATED +++ EN/TR SUPPORT ACTIVE +++"
+                news: "+++ WAR ROOM V17.0 INITIALIZED +++ LONDON TIME ACTIVE +++ NEW EMPIRES ADDED +++",
+                events: { accident: "ACCIDENT: ", intel: "INTEL: ", morale: "MORALE: ", logistics: "LOGISTICS: " },
+                city: "LONDON"
             }
         };
+
+        // --- RANDOM EVENTS DATA ---
+        const chaosEvents = [
+            { type: 'accident', target: 'self', effect: -300, text_tr: "Mühimmat deposunda patlama yaşandı.", text_en: "Ammunition depot explosion occurred." },
+            { type: 'accident', target: 'self', effect: -200, text_tr: "Savaş uçağı dost ateşiyle düştü.", text_en: "Fighter jet downed by friendly fire." },
+            { type: 'intel', target: 'enemy', effect: -400, text_tr: "Düşman şifreleme algoritmaları çözüldü.", text_en: "Enemy encryption algorithms cracked." },
+            { type: 'intel', target: 'self', effect: -250, text_tr: "Casus ağı deşifre oldu, operasyonlar aksadı.", text_en: "Spy network compromised, operations stalled." },
+            { type: 'morale', target: 'self', effect: +300, text_tr: "Cephede kahramanlık destanı yazılıyor.", text_en: "Heroic saga being written on the front lines." },
+            { type: 'morale', target: 'enemy', effect: -200, text_tr: "Düşman komuta kademesinde anlaşmazlık.", text_en: "Discord in enemy high command." },
+            { type: 'logistics', target: 'self', effect: -350, text_tr: "Yakıt ikmal hatları sabotaja uğradı.", text_en: "Fuel supply lines sabotaged." },
+            { type: 'logistics', target: 'self', effect: -150, text_tr: "Salgın hastalık birlikleri zayıflattı.", text_en: "Epidemic outbreak weakened the troops." },
+            { type: 'logistics', target: 'self', effect: +150, text_tr: "Sivil halktan beklenmedik lojistik destek.", text_en: "Unexpected logistical support from civilians." }
+        ];
 
         const fNum = (n) => new Intl.NumberFormat(currentLang === 'tr' ? 'tr-TR' : 'en-US', { notation: "compact", compactDisplay: "short" }).format(n);
         const getEmoji = (code) => { if(!code || code.length > 2) return "🏴"; return code.toUpperCase().replace(/./g, char => String.fromCodePoint(char.charCodeAt(0) + 127397)); };
         const wait = (ms) => new Promise(r => setTimeout(r, ms));
         const $ = (id) => document.getElementById(id);
 
-        // --- DB V15 (Bi-lingual Support) ---
-        // n: Turkish Name, n_en: English Name
+        // --- EXPANDED DATABASE V17 ---
         const modernDB = [
             { id: 'tr', n: 'Türkiye', n_en: 'Turkey', p: 6600, mp: 425000, t: 2200, a: 1050, s: 150, tech: 8.3, econ: 6, ally: 'NATO', nuke: false },
             { id: 'us', n: 'ABD', n_en: 'USA', p: 10000, mp: 1400000, t: 5500, a: 13000, s: 480, tech: 10, econ: 10, ally: 'NATO', nuke: true },
@@ -337,32 +354,21 @@
             { id: 'ua', n: 'Ukrayna', n_en: 'Ukraine', p: 4800, mp: 500000, t: 1500, a: 150, s: 20, tech: 7.0, econ: 3, ally: 'ALLIED', nuke: false },
             { id: 'ir', n: 'İran', n_en: 'Iran', p: 5500, mp: 575000, t: 4000, a: 500, s: 300, tech: 6.0, econ: 4, ally: 'AXIS', nuke: false },
             { id: 'az', n: 'Azerbaycan', n_en: 'Azerbaijan', p: 4100, mp: 65000, t: 900, a: 150, s: 30, tech: 7.5, econ: 6, ally: 'NONE', nuke: false },
-            { id: 'pt', n: 'Portekiz', n_en: 'Portugal', p: 3900, mp: 27000, t: 37, a: 90, s: 40, tech: 8.0, econ: 7, ally: 'NATO', nuke: false },
-            { id: 'nl', n: 'Hollanda', n_en: 'Netherlands', p: 4500, mp: 40000, t: 100, a: 150, s: 60, tech: 9.2, econ: 9, ally: 'NATO', nuke: false },
-            { id: 'be', n: 'Belçika', n_en: 'Belgium', p: 4100, mp: 25000, t: 0, a: 120, s: 40, tech: 9.0, econ: 9, ally: 'NATO', nuke: false },
-            { id: 'dk', n: 'Danimarka', n_en: 'Denmark', p: 4000, mp: 20000, t: 44, a: 60, s: 70, tech: 9.1, econ: 9, ally: 'NATO', nuke: false },
-            { id: 'no', n: 'Norveç', n_en: 'Norway', p: 4200, mp: 25000, t: 52, a: 100, s: 60, tech: 9.2, econ: 10, ally: 'NATO', nuke: false },
-            { id: 'se', n: 'İsveç', n_en: 'Sweden', p: 4600, mp: 24000, t: 120, a: 200, s: 290, tech: 9.3, econ: 9, ally: 'NATO', nuke: false },
-            { id: 'fi', n: 'Finlandiya', n_en: 'Finland', p: 4400, mp: 280000, t: 200, a: 60, s: 250, tech: 9.0, econ: 9, ally: 'NATO', nuke: false },
-            { id: 'pl', n: 'Polonya', n_en: 'Poland', p: 5200, mp: 150000, t: 800, a: 450, s: 80, tech: 8.2, econ: 7, ally: 'NATO', nuke: false },
-            { id: 'it', n: 'İtalya', n_en: 'Italy', p: 5800, mp: 165000, t: 200, a: 800, s: 180, tech: 8.8, econ: 7, ally: 'NATO', nuke: false },
-            { id: 'es', n: 'İspanya', n_en: 'Spain', p: 4800, mp: 120000, t: 327, a: 500, s: 166, tech: 8.5, econ: 7, ally: 'NATO', nuke: false },
-            { id: 'br', n: 'Brezilya', n_en: 'Brazil', p: 5400, mp: 360000, t: 400, a: 700, s: 110, tech: 6.5, econ: 7, ally: 'BRICS', nuke: false },
-            { id: 'cl', n: 'Şili', n_en: 'Chile', p: 3900, mp: 80000, t: 250, a: 300, s: 120, tech: 6.5, econ: 6, ally: 'NONE', nuke: false },
-            { id: 'co', n: 'Kolombiya', n_en: 'Colombia', p: 3800, mp: 290000, t: 0, a: 450, s: 200, tech: 5.0, econ: 5, ally: 'NONE', nuke: false },
-            { id: 'mx', n: 'Meksika', n_en: 'Mexico', p: 3500, mp: 250000, t: 0, a: 400, s: 150, tech: 5.0, econ: 6, ally: 'NONE', nuke: false },
-            { id: 'pk', n: 'Pakistan', n_en: 'Pakistan', p: 6300, mp: 650000, t: 2700, a: 1300, s: 100, tech: 6.5, econ: 3, ally: 'NONE', nuke: true },
-            { id: 'id', n: 'Endonezya', n_en: 'Indonesia', p: 5200, mp: 400000, t: 300, a: 450, s: 280, tech: 5.5, econ: 6, ally: 'NONE', nuke: false },
-            { id: 'my', n: 'Malezya', n_en: 'Malaysia', p: 4000, mp: 110000, t: 48, a: 150, s: 60, tech: 6.5, econ: 7, ally: 'NONE', nuke: false },
-            { id: 'th', n: 'Tayland', n_en: 'Thailand', p: 4200, mp: 360000, t: 300, a: 500, s: 290, tech: 5.5, econ: 6, ally: 'NONE', nuke: false },
+            { id: 'kz', n: 'Kazakistan', n_en: 'Kazakhstan', p: 3800, mp: 135000, t: 300, a: 200, s: 15, tech: 6.0, econ: 5, ally: 'CSTO', nuke: false },
             { id: 'vn', n: 'Vietnam', n_en: 'Vietnam', p: 4300, mp: 480000, t: 1800, a: 200, s: 65, tech: 5.0, econ: 5, ally: 'NONE', nuke: false },
-            { id: 'sa', n: 'Suudi Arabistan', n_en: 'Saudi Arabia', p: 5100, mp: 225000, t: 1200, a: 800, s: 55, tech: 8.0, econ: 9, ally: 'NONE', nuke: false },
-            { id: 'ae', n: 'BAE', n_en: 'UAE', p: 4300, mp: 65000, t: 400, a: 500, s: 70, tech: 9.0, econ: 10, ally: 'NONE', nuke: false },
-            { id: 'qa', n: 'Katar', n_en: 'Qatar', p: 3800, mp: 12000, t: 90, a: 100, s: 80, tech: 9.5, econ: 10, ally: 'NONE', nuke: false },
+            { id: 'kp', n: 'Kuzey Kore', n_en: 'North Korea', p: 5000, mp: 1200000, t: 6000, a: 900, s: 400, tech: 4.0, econ: 2, ally: 'PACT', nuke: true },
+            { id: 'tw', n: 'Tayvan', n_en: 'Taiwan', p: 4900, mp: 170000, t: 1100, a: 700, s: 110, tech: 9.0, econ: 9, ally: 'ALLIED', nuke: false },
+            { id: 'pl', n: 'Polonya', n_en: 'Poland', p: 5200, mp: 150000, t: 800, a: 450, s: 80, tech: 8.2, econ: 7, ally: 'NATO', nuke: false },
+            { id: 'se', n: 'İsveç', n_en: 'Sweden', p: 4600, mp: 24000, t: 120, a: 200, s: 290, tech: 9.3, econ: 9, ally: 'NATO', nuke: false },
+            { id: 'no', n: 'Norveç', n_en: 'Norway', p: 4200, mp: 25000, t: 52, a: 100, s: 60, tech: 9.2, econ: 10, ally: 'NATO', nuke: false },
+            { id: 'fi', n: 'Finlandiya', n_en: 'Finland', p: 4400, mp: 280000, t: 200, a: 60, s: 250, tech: 9.0, econ: 9, ally: 'NATO', nuke: false },
+            { id: 'br', n: 'Brezilya', n_en: 'Brazil', p: 5400, mp: 360000, t: 400, a: 700, s: 110, tech: 6.5, econ: 7, ally: 'BRICS', nuke: false },
+            { id: 'mx', n: 'Meksika', n_en: 'Mexico', p: 3500, mp: 250000, t: 0, a: 400, s: 150, tech: 5.0, econ: 6, ally: 'NONE', nuke: false },
+            { id: 'id', n: 'Endonezya', n_en: 'Indonesia', p: 5200, mp: 400000, t: 300, a: 450, s: 280, tech: 5.5, econ: 6, ally: 'NONE', nuke: false },
+            { id: 'pk', n: 'Pakistan', n_en: 'Pakistan', p: 6300, mp: 650000, t: 2700, a: 1300, s: 100, tech: 6.5, econ: 3, ally: 'NONE', nuke: true },
             { id: 'eg', n: 'Mısır', n_en: 'Egypt', p: 5300, mp: 440000, t: 4300, a: 1000, s: 316, tech: 6.0, econ: 5, ally: 'NONE', nuke: false },
-            { id: 'za', n: 'Güney Afrika', n_en: 'South Africa', p: 3800, mp: 66000, t: 195, a: 220, s: 40, tech: 6.5, econ: 6, ally: 'BRICS', nuke: false },
-            { id: 'ng', n: 'Nijerya', n_en: 'Nigeria', p: 3500, mp: 230000, t: 350, a: 140, s: 75, tech: 4.5, econ: 5, ally: 'NONE', nuke: false },
-            { id: 'kp', n: 'Kuzey Kore', n_en: 'North Korea', p: 5000, mp: 1200000, t: 6000, a: 900, s: 400, tech: 4.0, econ: 2, ally: 'PACT', nuke: true }
+            { id: 'sa', n: 'Suudi Arabistan', n_en: 'Saudi Arabia', p: 5100, mp: 225000, t: 1200, a: 800, s: 55, tech: 8.0, econ: 9, ally: 'NONE', nuke: false },
+            { id: 'za', n: 'Güney Afrika', n_en: 'South Africa', p: 3800, mp: 66000, t: 195, a: 220, s: 40, tech: 6.5, econ: 6, ally: 'BRICS', nuke: false }
         ];
 
         const empiresDB = [
@@ -370,11 +376,11 @@
             { id: 'tr_hun', n: 'Büyük Hun (Mete Han)', n_en: 'Great Huns (Modu Chanyu)', p: 9300, mp: 300000, t: 0, a: 0, s: 0, tech: 7, econ: 6, ally: 'NOMAD', nuke: false },
             { id: 'tr_att', n: 'Avrupa Hun (Attila)', n_en: 'Huns (Attila)', p: 9400, mp: 500000, t: 0, a: 0, s: 0, tech: 7, econ: 5, ally: 'SCOURGE', nuke: false },
             { id: 'tr_gok', n: 'Göktürk Kağanlığı', n_en: 'Gokturk Khaganate', p: 9200, mp: 400000, t: 0, a: 0, s: 0, tech: 6, econ: 7, ally: 'TURK', nuke: false },
-            { id: 'tr_sel', n: 'Büyük Selçuklu', n_en: 'Seljuk Empire', p: 9100, mp: 350000, t: 0, a: 0, s: 0, tech: 6, econ: 6, ally: 'SELJUK', nuke: false },
-            { id: 'tr_tim', n: 'Timur İmparatorluğu', n_en: 'Timurid Empire', p: 9600, mp: 800000, t: 0, a: 0, s: 0, tech: 8, econ: 8, ally: 'CONQUEROR', nuke: false },
-            { id: 'mn_mon', n: 'Moğol İmparatorluğu', n_en: 'Mongol Empire', p: 9400, mp: 200000, t: 0, a: 0, s: 0, tech: 8, econ: 6, ally: 'HORDE', nuke: false },
             { id: 'it_rom', n: 'Roma İmparatorluğu', n_en: 'Roman Empire', p: 9200, mp: 450000, t: 0, a: 0, s: 500, tech: 9, econ: 8, ally: 'SPQR', nuke: false },
+            { id: 'mn_mon', n: 'Moğol İmparatorluğu', n_en: 'Mongol Empire', p: 9400, mp: 200000, t: 0, a: 0, s: 0, tech: 8, econ: 6, ally: 'HORDE', nuke: false },
             { id: 'mk_ale', n: 'Makedonya (İskender)', n_en: 'Macedon (Alexander)', p: 8900, mp: 50000, t: 0, a: 0, s: 100, tech: 10, econ: 7, ally: 'HELLENIC', nuke: false },
+            { id: 'ir_per', n: 'Pers İmparatorluğu', n_en: 'Persian Empire', p: 8600, mp: 500000, t: 0, a: 0, s: 200, tech: 7, econ: 9, ally: 'PERSIAN', nuke: false },
+            { id: 'eg_anc', n: 'Antik Mısır (Ramses)', n_en: 'Ancient Egypt (Ramses)', p: 8000, mp: 100000, t: 0, a: 0, s: 50, tech: 6, econ: 8, ally: 'PHARAOH', nuke: false },
             { id: 'de_naz', n: 'Nazi Almanyası (1941)', n_en: 'Nazi Germany (1941)', p: 8800, mp: 3500000, t: 4000, a: 3000, s: 300, tech: 9, econ: 8, ally: 'AXIS', nuke: false },
             { id: 'ru_sov', n: 'Sovyetler (1945)', n_en: 'Soviet Union (1945)', p: 9000, mp: 11000000, t: 10000, a: 5000, s: 200, tech: 7, econ: 6, ally: 'COMINTERN', nuke: true },
             { id: 'gb_emp', n: 'Britanya İmp. (1900)', n_en: 'British Empire (1900)', p: 9100, mp: 500000, t: 0, a: 0, s: 1000, tech: 10, econ: 10, ally: 'COMMONWEALTH', nuke: false },
@@ -382,30 +388,22 @@
             { id: 'es_emp', n: 'İspanyol İmparatorluğu', n_en: 'Spanish Empire', p: 8900, mp: 200000, t: 0, a: 0, s: 1000, tech: 9, econ: 10, ally: 'ARMADA', nuke: false },
             { id: 'jp_sho', n: 'Japon Şogunluğu', n_en: 'Japanese Shogunate', p: 8100, mp: 300000, t: 0, a: 0, s: 100, tech: 6, econ: 6, ally: 'SAMURAI', nuke: false },
             { id: 'tn_car', n: 'Kartaca (Hannibal)', n_en: 'Carthage (Hannibal)', p: 8500, mp: 100000, t: 0, a: 0, s: 600, tech: 8, econ: 10, ally: 'PUNIC', nuke: false },
-            { id: 'ir_per', n: 'Pers İmparatorluğu', n_en: 'Persian Empire', p: 8600, mp: 500000, t: 0, a: 0, s: 200, tech: 7, econ: 9, ally: 'PERSIAN', nuke: false },
-            { id: 'eg_anc', n: 'Antik Mısır (Ramses)', n_en: 'Ancient Egypt (Ramses)', p: 8000, mp: 100000, t: 0, a: 0, s: 50, tech: 6, econ: 8, ally: 'PHARAOH', nuke: false },
-            { id: 'se_vik', n: 'Vikingler (Ragnar)', n_en: 'Vikings (Ragnar)', p: 8000, mp: 50000, t: 0, a: 0, s: 300, tech: 6, econ: 5, ally: 'NORTH', nuke: false },
-            { id: 'at_hun', n: 'Avusturya-Macaristan', n_en: 'Austria-Hungary', p: 8400, mp: 2000000, t: 50, a: 200, s: 100, tech: 8, econ: 7, ally: 'CENTRAL', nuke: false },
-            { id: 'gr_byz', n: 'Bizans (Jüstinyen)', n_en: 'Byzantium (Justinian)', p: 8300, mp: 150000, t: 0, a: 0, s: 400, tech: 8, econ: 8, ally: 'BYZ', nuke: false },
-            { id: 'us_civ', n: 'ABD (İç Savaş)', n_en: 'USA (Civil War)', p: 7000, mp: 1000000, t: 0, a: 0, s: 200, tech: 6, econ: 7, ally: 'UNION', nuke: false }
+            { id: 'mx_azt', n: 'Aztek İmparatorluğu', n_en: 'Aztec Empire', p: 7800, mp: 200000, t: 0, a: 0, s: 50, tech: 5, econ: 7, ally: 'TRIPLE', nuke: false },
+            { id: 'jp_ww2', n: 'Japon İmp. (WW2)', n_en: 'Japanese Empire (WW2)', p: 8700, mp: 2000000, t: 2000, a: 3000, s: 600, tech: 8, econ: 7, ally: 'AXIS', nuke: false },
+            { id: 'za_zul', n: 'Zulu Krallığı', n_en: 'Zulu Kingdom', p: 7500, mp: 80000, t: 0, a: 0, s: 0, tech: 4, econ: 5, ally: 'ZULU', nuke: false }
         ];
 
         const historyDB = [
-            { title: "İstanbul'un Fethi (1453)", title_en: "Conquest of Istanbul (1453)", year: "1453", winner: "OSMANLI", winner_en: "OTTOMAN", sideA: "Osmanlı", sideA_en: "Ottoman", sideB: "Bizans", sideB_en: "Byzantine", troopsA: "80.000", troopsB: "7.000", casualties: "Bilinmiyor", desc: "Çağ değiştiren kuşatma. Şahi topları ve gemilerin karadan yürütülmesiyle surlar aşıldı.", desc_en: "The siege that changed ages. Walls breached by massive cannons and ships carried over land.", simTerrain: 'urban', simStatsA: empiresDB[0], simStatsB: {n:'Bizans', n_en:'Byzantine', p:3000, mp:7000, t:0, a:0, s:26, tech:4, econ:3, stab:2, ally:'BYZ', nuke:false}, simWinnerId: 'A' },
+            { title: "Tsushima Savaşı (1905)", title_en: "Battle of Tsushima (1905)", year: "1905", winner: "JAPONYA", winner_en: "JAPAN", sideA: "Japonya", sideA_en: "Japan", sideB: "Rusya", sideB_en: "Russia", troopsA: "89 Gemi", troopsB: "38 Gemi", casualties: "Rus Donanması İmha", desc: "Modern çağda bir Asya devletinin bir Avrupa devletini yendiği ilk büyük deniz savaşı.", desc_en: "First major naval victory of an Asian power over a European power in modern era.", simTerrain: 'naval', simStatsA: empiresDB[17], simStatsB: {n:'Rus İmparatorluğu', n_en:'Russian Empire', p:7500, mp:50000, s:38, t:0, a:0, tech:6, econ:6, ally:'TSAR', nuke:false}, simWinnerId: 'A' },
+            { title: "Adwa Savaşı (1896)", title_en: "Battle of Adwa (1896)", year: "1896", winner: "ETİYOPYA", winner_en: "ETHIOPIA", sideA: "Etiyopya", sideA_en: "Ethiopia", sideB: "İtalya", sideB_en: "Italy", troopsA: "100.000", troopsB: "17.000", casualties: "İtalyan Ordusu Bozgunu", desc: "Etiyopya'nın İtalyan sömürgeciliğini durdurduğu büyük zafer.", desc_en: "Great victory where Ethiopia stopped Italian colonization.", simTerrain: 'mountain', simStatsA: {n:'Etiyopya', n_en:'Ethiopia', p:7000, mp:100000, t:0, a:0, s:0, tech:4, econ:4, ally:'AFRICA', nuke:false}, simStatsB: {n:'İtalya', n_en:'Italy', p:6500, mp:17000, t:0, a:0, s:0, tech:7, econ:6, ally:'COLONIAL', nuke:false}, simWinnerId: 'A' },
+            { title: "Tenochtitlan (1521)", title_en: "Siege of Tenochtitlan (1521)", year: "1521", winner: "İSPANYA", winner_en: "SPAIN", sideA: "İspanyollar", sideA_en: "Spanish", sideB: "Aztekler", sideB_en: "Aztecs", troopsA: "200.000 (Yerli Müttefikler)", troopsB: "300.000", casualties: "Aztek İmparatorluğu Yıkıldı", desc: "Cortes ve yerli müttefiklerinin Aztek başkentini düşürmesi.", desc_en: "Fall of the Aztec capital to Cortes and native allies.", simTerrain: 'urban', simStatsA: empiresDB[13], simStatsB: empiresDB[16], simWinnerId: 'A' },
+            { title: "İstanbul'un Fethi (1453)", title_en: "Conquest of Istanbul (1453)", year: "1453", winner: "OSMANLI", winner_en: "OTTOMAN", sideA: "Osmanlı", sideA_en: "Ottoman", sideB: "Bizans", sideB_en: "Byzantine", troopsA: "80.000", troopsB: "7.000", casualties: "Bilinmiyor", desc: "Çağ değiştiren kuşatma.", desc_en: "The siege that changed ages.", simTerrain: 'urban', simStatsA: empiresDB[0], simStatsB: {n:'Bizans', n_en:'Byzantine', p:3000, mp:7000, t:0, a:0, s:26, tech:4, econ:3, stab:2, ally:'BYZ', nuke:false}, simWinnerId: 'A' },
             { title: "Malazgirt (1071)", title_en: "Battle of Manzikert (1071)", year: "1071", winner: "SELÇUKLU", winner_en: "SELJUK", sideA: "Büyük Selçuklu", sideA_en: "Seljuks", sideB: "Bizans", sideB_en: "Byzantine", troopsA: "50.000", troopsB: "200.000", casualties: "Ağır Bizans Kaybı", desc: "Sultan Alparslan, Turan taktiği ile Romen Diyojen'in devasa ordusunu imha etti.", desc_en: "Sultan Alparslan annihilated the massive Byzantine army using the Turan tactic.", simTerrain: 'plains', simStatsA: {n:'Selçuklu', n_en:'Seljuks', p:6000, mp:50000, t:0, a:0, s:0, tech:5, econ:5, ally:'TURK', nuke:false}, simStatsB: {n:'Bizans', n_en:'Byzantine', p:5500, mp:200000, t:0, a:0, s:0, tech:4, econ:6, ally:'ROM', nuke:false}, simWinnerId: 'A' },
             { title: "Viyana Kuşatması (1683)", title_en: "Siege of Vienna (1683)", year: "1683", winner: "KOALİSYON", winner_en: "COALITION", sideA: "Osmanlı", sideA_en: "Ottoman", sideB: "Kutsal İttifak", sideB_en: "Holy League", troopsA: "150.000", troopsB: "90.000", casualties: "Osmanlı Bozgunu", desc: "Lehistan Kralı Sobieski'nin süvari hücumuyla Osmanlı kuşatması kırıldı.", desc_en: "Ottoman siege broken by the heavy cavalry charge of Polish King Sobieski.", simTerrain: 'plains', simStatsA: empiresDB[0], simStatsB: {n:'Kutsal İttifak', n_en:'Holy League', p:9600, mp:90000, t:0, a:0, s:0, tech:9, econ:8, ally:'HOLY', nuke:false}, simWinnerId: 'B' },
             { title: "Preveze (1538)", title_en: "Battle of Preveza (1538)", year: "1538", winner: "OSMANLI", winner_en: "OTTOMAN", sideA: "Osmanlı", sideA_en: "Ottoman", sideB: "Haçlı", sideB_en: "Crusaders", troopsA: "122 Kadırga", troopsB: "600 Gemi", casualties: "128 Haçlı Gemisi", desc: "Barbaros Hayrettin Paşa'nın denizcilik dehasıyla kazanılan en büyük deniz zaferi.", desc_en: "Greatest naval victory won by the tactical genius of Barbarossa Hayreddin Pasha.", simTerrain: 'naval', simStatsA: empiresDB[0], simStatsB: {n:'Haçlılar', n_en:'Crusaders', p:5500, mp:60000, s:600, t:0, a:0, tech:5, econ:7, ally:'CRUSADE', nuke:false}, simWinnerId: 'A' },
-            { title: "Ankara Savaşı (1402)", title_en: "Battle of Ankara (1402)", year: "1402", winner: "TİMUR İMP.", winner_en: "TIMURID", sideA: "Timur İmparatorluğu", sideA_en: "Timurid", sideB: "Osmanlı", sideB_en: "Ottoman", troopsA: "140.000", troopsB: "85.000", casualties: "Osmanlı Dağıldı", desc: "Timur'un filleri ve Kara Tatarların ihaneti savaşı belirledi.", desc_en: "Timur's elephants and the betrayal of Black Tatars decided the battle.", simTerrain: 'plains', simStatsA: empiresDB[5], simStatsB: {n:'Osmanlı', n_en:'Ottoman', p:7000, mp:85000, t:0, a:0, s:0, tech:6, econ:6, ally:'OTT', nuke:false}, simWinnerId: 'A' },
-            { title: "Mohaç (1526)", title_en: "Battle of Mohacs (1526)", year: "1526", winner: "OSMANLI", winner_en: "OTTOMAN", sideA: "Osmanlı", sideA_en: "Ottoman", sideB: "Macaristan", sideB_en: "Hungary", troopsA: "60.000", troopsB: "25.000", casualties: "Macar Ordusu Yok Oldu", desc: "Tarihin en kısa süren meydan savaşı (2 Saat).", desc_en: "Shortest field battle in history (2 Hours). Hungarian kingdom fell.", simTerrain: 'plains', simStatsA: empiresDB[0], simStatsB: {n:'Macaristan', n_en:'Hungary', p:5000, mp:25000, t:0, a:0, s:0, tech:5, econ:5, ally:'HUN', nuke:false}, simWinnerId: 'A' },
-            { title: "Varna Savaşı (1444)", title_en: "Battle of Varna (1444)", year: "1444", winner: "OSMANLI", winner_en: "OTTOMAN", sideA: "Osmanlı", sideA_en: "Ottoman", sideB: "Haçlı Ordusu", sideB_en: "Crusaders", troopsA: "60.000", troopsB: "20.000", casualties: "Haçlı Kralı Öldü", desc: "II. Murad komutasındaki Osmanlı ordusu, Macar-Leh Haçlı ordusunu bozguna uğrattı.", desc_en: "Ottoman army under Murad II routed the Hungarian-Polish Crusader army.", simTerrain: 'plains', simStatsA: {n:'Osmanlı', n_en:'Ottoman', p:6500, mp:60000, t:0, a:0, s:0, tech:5, econ:6, ally:'OTT', nuke:false}, simStatsB: {n:'Haçlılar', n_en:'Crusaders', p:5000, mp:20000, t:0, a:0, s:0, tech:5, econ:5, ally:'CRUSADE', nuke:false}, simWinnerId: 'A' },
-            { title: "Plevne Savunması (1877)", title_en: "Siege of Plevna (1877)", year: "1877", winner: "RUSYA", winner_en: "RUSSIA", sideA: "Osmanlı", sideA_en: "Ottoman", sideB: "Rusya", sideB_en: "Russia", troopsA: "40.000", troopsB: "150.000", casualties: "Ağır Rus Kaybı", desc: "Gazi Osman Paşa'nın Rus ordularını aylarca durdurduğu efsanevi savunma savaşı.", desc_en: "Legendary defense by Osman Pasha holding back Russian armies for months.", simTerrain: 'urban', simStatsA: {n:'Osmanlı', n_en:'Ottoman', p:6000, mp:40000, t:0, a:0, s:0, tech:5, econ:4, ally:'OTT', nuke:false}, simStatsB: {n:'Rusya', n_en:'Russia', p:7000, mp:150000, t:0, a:0, s:0, tech:5, econ:6, ally:'RUS', nuke:false}, simWinnerId: 'B' },
             { title: "Stalingrad (1942)", title_en: "Battle of Stalingrad (1942)", year: "1942", winner: "SSCB", winner_en: "USSR", sideA: "Sovyetler", sideA_en: "USSR", sideB: "Almanya", sideB_en: "Germany", troopsA: "1.7M", troopsB: "1M", casualties: "2M+", desc: "Kış şartları ve inatçı direniş Alman 6. Ordusunu yok etti.", desc_en: "Winter conditions and stubborn resistance destroyed the German 6th Army.", simTerrain: 'urban', simStatsA: empiresDB[10], simStatsB: empiresDB[9], simWinnerId: 'A', weather: 'snow' },
-            { title: "Kursk (1943)", title_en: "Battle of Kursk (1943)", year: "1943", winner: "SOVYETLER", winner_en: "USSR", sideA: "Sovyetler", sideA_en: "USSR", sideB: "Almanya", sideB_en: "Germany", troopsA: "1.9M + 5000 Tank", troopsB: "900K + 3000 Tank", casualties: "Büyük Zırhlı Kayıplar", desc: "Tarihin en büyük tank savaşı.", desc_en: "Largest tank battle in history.", simTerrain: 'plains', simStatsA: {n:'Sovyetler', n_en:'USSR', p:8500, mp:1900000, t:5000, a:2000, s:0, tech:7, econ:6, ally:'RED', nuke:false}, simStatsB: empiresDB[9], simWinnerId: 'A' },
             { title: "Normandiya (1944)", title_en: "Normandy Landings (1944)", year: "1944", winner: "MÜTTEFİKLER", winner_en: "ALLIES", sideA: "Müttefikler", sideA_en: "Allies", sideB: "Almanya", sideB_en: "Germany", troopsA: "156.000", troopsB: "50.000", casualties: "425.000", desc: "Tarihin en büyük amfibi harekatı.", desc_en: "Largest amphibious invasion in history.", simTerrain: 'naval', simStatsA: modernDB[1], simStatsB: empiresDB[9], simWinnerId: 'A' },
-            { title: "Trafalgar (1805)", title_en: "Battle of Trafalgar (1805)", year: "1805", winner: "İNGİLTERE", winner_en: "UK", sideA: "İngiltere", sideA_en: "UK", sideB: "Fransa/İspanya", sideB_en: "France/Spain", troopsA: "27 Gemi", troopsB: "33 Gemi", casualties: "22 Fransız Gemisi", desc: "Amiral Nelson'un zaferi.", desc_en: "Admiral Nelson's victory.", simTerrain: 'naval', simStatsA: empiresDB[11], simStatsB: empiresDB[12], simWinnerId: 'A' },
-            { title: "Waterloo (1815)", title_en: "Battle of Waterloo (1815)", year: "1815", winner: "KOALİSYON", winner_en: "COALITION", sideA: "Fransa", sideA_en: "France", sideB: "Koalisyon", sideB_en: "Coalition", troopsA: "72.000", troopsB: "118.000", casualties: "47.000", desc: "Napolyon'un son savaşı.", desc_en: "Napoleon's final battle.", simTerrain: 'plains', simStatsA: empiresDB[12], simStatsB: {n:'Koalisyon', n_en:'Coalition', p:7500, mp:118000, t:0, a:0, s:0, tech:5, econ:6, ally:'ALLIED', nuke:false}, simWinnerId: 'B' },
-            { title: "Zama (MÖ 202)", title_en: "Battle of Zama (202 BC)", year: "-202", winner: "ROMA", winner_en: "ROME", sideA: "Roma", sideA_en: "Rome", sideB: "Kartaca", sideB_en: "Carthage", troopsA: "35.000", troopsB: "40.000", casualties: "Kartaca Yok Oldu", desc: "Hannibal ve Scipio'nun karşılaşması.", desc_en: "Clash of Hannibal and Scipio.", simTerrain: 'plains', simStatsA: empiresDB[7], simStatsB: empiresDB[15], simWinnerId: 'A' },
-            { title: "Büyük Taarruz (1922)", title_en: "Great Offensive (1922)", year: "1922", winner: "TÜRK ORDUSU", winner_en: "TURKISH ARMY", sideA: "Türk Ordusu", sideA_en: "Turkish Army", sideB: "Yunan Ordusu", sideB_en: "Greek Army", troopsA: "200.000", troopsB: "220.000", casualties: "100.000", desc: "Kurtuluş Savaşı'nın finali.", desc_en: "Finale of the War of Independence.", simTerrain: 'plains', simStatsA: {n:'Türk Ordusu', n_en:'Turkish Army', p:4500, mp:200000, t:0, a:10, s:0, tech:4, econ:5, ally:'TR', nuke:false}, simStatsB: {n:'Yunan Ordusu', n_en:'Greek Army', p:4000, mp:220000, t:0, a:20, s:50, tech:4, econ:4, ally:'GR', nuke:false}, simWinnerId: 'A' }
+            { title: "Zama (MÖ 202)", title_en: "Battle of Zama (202 BC)", year: "-202", winner: "ROMA", winner_en: "ROME", sideA: "Roma", sideA_en: "Rome", sideB: "Kartaca", sideB_en: "Carthage", troopsA: "35.000", troopsB: "40.000", casualties: "Kartaca Yok Oldu", desc: "Hannibal ve Scipio'nun karşılaşması.", desc_en: "Clash of Hannibal and Scipio.", simTerrain: 'plains', simStatsA: empiresDB[7], simStatsB: empiresDB[15], simWinnerId: 'A' }
         ];
 
         // --- GLOBAL STATE ---
@@ -422,28 +420,34 @@
 
         // --- INIT ---
         function init() {
-            applyLanguage(); // Set initial labels
+            applyLanguage(); 
             setupCustomSelects(modernDB);
-            setInterval(() => $('sysTime').innerText = new Date().toLocaleTimeString(currentLang === 'tr' ? 'tr-TR' : 'en-US'), 1000);
+            updateClock();
+            setInterval(updateClock, 1000);
             drawMap('plains', 50);
             loadHistoryList();
             initParticles();
             updateAll();
         }
 
+        function updateClock() {
+            const timeZone = currentLang === 'tr' ? 'Europe/Istanbul' : 'Europe/London';
+            const locale = currentLang === 'tr' ? 'tr-TR' : 'en-GB';
+            $('sysTime').innerText = new Date().toLocaleTimeString(locale, { timeZone: timeZone });
+            $('timeZoneLabel').innerText = i18n[currentLang].city;
+        }
+
         function toggleLang() {
             currentLang = currentLang === 'tr' ? 'en' : 'tr';
             $('langLabel').innerText = currentLang.toUpperCase();
             applyLanguage();
-            // Re-populate lists to show translated names
+            updateClock();
+            // Re-populate lists
             if (currentMode === 'sim') setupCustomSelects(modernDB);
             else if (currentMode === 'alt') setupCustomSelects(empiresDB);
-            loadHistoryList(); // Re-render history titles
-            
-            // Refresh stats labels
+            loadHistoryList(); 
             updateAll();
             
-            // Refresh history detail if open
             if(currentHistIndex !== -1 && !$('historyContent').classList.contains('hidden')) {
                 showHistoryDetail(currentHistIndex, document.querySelectorAll('.history-item')[currentHistIndex]);
             }
@@ -458,10 +462,8 @@
             $('startBtnMain').innerText = txt.startBtn;
             $('newsFeed').innerText = txt.news;
             updateWeatherUI();
-            // Update dropdown placeholders
             $('searchA').placeholder = txt.search;
             $('searchB').placeholder = txt.search;
-            // Refresh Terrain Options
             populateTerrainOptions();
         }
 
@@ -479,7 +481,6 @@
         }
 
         function updateWeatherUI() {
-            // Maps terrain to weather for UI label
             const wKey = { 'plains': 'rain', 'urban': 'rain', 'mountain': 'snow', 'naval': 'storm', 'desert': 'sandstorm', 'jungle': 'rain', 'snow': 'snow' }[currentTerrain] || 'clear';
             $('weatherIndicator').innerText = i18n[currentLang].weather[wKey];
         }
@@ -488,9 +489,8 @@
         function setupCustomSelects(db) {
             setupSide('A', db);
             setupSide('B', db);
-            // Keep current selection if valid, else reset
             if(!selState.A.val || !getC(selState.A.val)) setSelectValue('A', db[0].id);
-            else setSelectValue('A', selState.A.val); // Refresh name text
+            else setSelectValue('A', selState.A.val);
             
             if(!selState.B.val || !getC(selState.B.val)) setSelectValue('B', db[1].id);
             else setSelectValue('B', selState.B.val);
@@ -503,7 +503,6 @@
             function renderList(filter = "") {
                 list.innerHTML = "";
                 const nameKey = currentLang === 'tr' ? 'n' : 'n_en';
-                // Sort by name
                 const sorted = [...db].sort((a,b) => a[nameKey].localeCompare(b[nameKey], currentLang === 'tr' ? 'tr' : 'en'));
                 const filtered = sorted.filter(c => c[nameKey].toLowerCase().includes(filter.toLowerCase()));
                 
@@ -516,14 +515,12 @@
                     const div = document.createElement('div');
                     div.className = 'custom-option';
                     const displayName = c[nameKey];
-                    // Highlight
                     if(filter) {
                         const regex = new RegExp(`(${filter})`, 'gi');
                         div.innerHTML = displayName.replace(regex, '<strong>$1</strong>');
                     } else {
                         div.innerText = displayName;
                     }
-                    
                     div.onclick = () => {
                         setSelectValue(side, c.id);
                         list.classList.remove('show');
@@ -535,11 +532,9 @@
             input.onfocus = () => { input.select(); list.classList.add('show'); renderList(""); };
             input.oninput = () => { list.classList.add('show'); renderList(input.value); };
             
-            // Close outside click
             document.addEventListener('click', (e) => {
                 if(!input.contains(e.target) && !list.contains(e.target)) {
                     list.classList.remove('show');
-                    // Restore correct label if typed garbage
                     const c = getC(selState[side].val);
                     if(c) input.value = (currentLang === 'tr' ? c.n : c.n_en);
                 }
@@ -595,7 +590,7 @@
             renderStats('A', getC($('valA').value));
             renderStats('B', getC($('valB').value));
             currentTerrain = $('terrainSelect').value;
-            if(!currentTerrain) populateTerrainOptions(); // Init if empty
+            if(!currentTerrain) populateTerrainOptions();
             updateWeatherUI();
             drawMap(currentTerrain, 50);
         }
@@ -630,8 +625,6 @@
             if(currentMode === 'history') {
                 const h = historyDB[currentHistIndex];
                 cA = h.simStatsA; cB = h.simStatsB;
-                // Localize history stats names if possible, though they are hardcoded in historyDB objects
-                // We will use the hardcoded names for simulation logs
             } else {
                 cA = getC($('valA').value); cB = getC($('valB').value);
                 if(cA.id === cB.id) return alert("Error: Same Side");
@@ -645,6 +638,28 @@
                 day++;
                 $('battleDay').innerText = day;
                 
+                // Daily Chaos Event
+                if (Math.random() < 0.15) { 
+                    const evt = chaosEvents[Math.floor(Math.random() * chaosEvents.length)];
+                    const isSideA = Math.random() > 0.5;
+                    const targetName = isSideA ? (currentLang==='tr'?cA.n:cA.n_en) : (currentLang==='tr'?cB.n:cB.n_en);
+                    
+                    if (evt.target === 'self') {
+                        if (isSideA) scoreA += evt.effect; else scoreB += evt.effect;
+                    } else {
+                        if (isSideA) scoreB += evt.effect; else scoreA += evt.effect;
+                    }
+                    
+                    const eventTxt = currentLang === 'tr' ? evt.text_tr : evt.text_en;
+                    const prefix = i18n[currentLang].events[evt.type];
+                    const div = document.createElement('div'); 
+                    div.className = 'text-yellow-400 font-bold animate-pulse';
+                    div.innerText = `>>> ${prefix} [${targetName}] ${eventTxt}`; 
+                    $('battleLog').appendChild(div); $('battleLog').scrollTop = $('battleLog').scrollHeight;
+                    
+                    if (Math.abs(evt.effect) > 250) scenarioLog.push(eventTxt);
+                }
+
                 let dailyA = (cA.p/100) + (Math.random()*cA.tech);
                 let dailyB = (cB.p/100) + (Math.random()*cB.tech);
                 
@@ -661,7 +676,7 @@
                 if(scoreA < 1200) dmgA *= 0.5; if(scoreB < 1200) dmgB *= 0.5; 
                 scoreA -= dmgA; scoreB -= dmgB;
 
-                if(day===20 && cA.a > cB.a*1.5) { scoreB -= 200; log(`${currentLang==='tr'?cA.n:cA.n_en} Air/Naval Superiority`, 'blue'); scenarioLog.push('air_a'); }
+                if(day===20 && cA.a > cB.a*1.5) { scoreB -= 200; log(`${currentLang==='tr'?cA.n:cA.n_en} Air/Naval Superiority`, 'blue'); }
                 if(currentMode !== 'history' && $('nukeToggle').checked && (scoreA<800 || scoreB<800) && (cA.nuke || cB.nuke) && Math.random()<0.02) { endWar(null, "NÜKLEER"); break; }
 
                 $('liveScoreA').innerText = Math.round(Math.max(0,scoreA)); $('liveScoreB').innerText = Math.round(Math.max(0,scoreB));
@@ -681,7 +696,6 @@
             let cA = currentMode === 'history' ? historyDB[currentHistIndex].simStatsA : getC($('valA').value);
             let cB = currentMode === 'history' ? historyDB[currentHistIndex].simStatsB : getC($('valB').value);
             
-            // Determine Names based on Lang
             const nameWin = currentLang === 'tr' ? (winner.n || winner.n_en) : winner.n_en || winner.n;
             const nameLose = nameWin === (currentLang==='tr'?cA.n:cA.n_en) ? (currentLang==='tr'?cB.n:cB.n_en) : (currentLang==='tr'?cA.n:cA.n_en);
 
@@ -692,12 +706,14 @@
             let story = "";
             if(type === "NÜKLEER") story = currentLang === 'tr' ? "Taktiksel nükleer silah kullanımı sonucu küresel yıkım gerçekleşti." : "Global destruction occurred due to tactical nuclear weapon usage.";
             else {
+                const eventNote = scenarioLog.length > 0 ? (currentLang === 'tr' ? `Özellikle "${scenarioLog[0]}" olayı savaşın seyrini değiştirdi.` : `Notably, the "${scenarioLog[0]}" event shifted the tide of battle.`) : "";
+                
                 if (currentLang === 'tr') {
-                    story = `${nameWin}, ${day} gün süren çatışmalar sonunda ${nameLose} direnişini kırdı. `;
+                    story = `${nameWin}, ${day} gün süren çatışmalar sonunda ${nameLose} direnişini kırdı. ${eventNote} `;
                     if(currentMode === 'history') story += "Tarihsel akışa uygun bir sonuç elde edildi.";
                     else story += `${txt.terrain[currentTerrain]} şartları belirleyici oldu.`;
                 } else {
-                    story = `${nameWin} broke ${nameLose}'s resistance after ${day} days of conflict. `;
+                    story = `${nameWin} broke ${nameLose}'s resistance after ${day} days of conflict. ${eventNote} `;
                     if(currentMode === 'history') story += "Result is consistent with historical records.";
                     else story += `${txt.terrain[currentTerrain]} conditions were decisive.`;
                 }
@@ -756,7 +772,6 @@
             $('histNameB').innerText = tr ? h.sideB : h.sideB_en;
             $('flagA').innerText = "⚔️"; $('flagB').innerText = "🛡️";
             
-            // Map terrain key back to selection
             $('terrainSelect').value = h.simTerrain; 
             $('terrainSelect').disabled = true;
             $('btnRandom').classList.add('hidden');
